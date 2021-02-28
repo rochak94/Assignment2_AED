@@ -7,6 +7,7 @@ package assignment2;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -15,13 +16,13 @@ import java.util.Scanner;
  */
 public class Main {
     
-    public static void viewSignHistory(VitalSignsHistory  record) {
+    public static void viewSignHistory(EncounterHistory  record) {
     
-     ArrayList<VitalSigns> list=  record.getVitalSignsList();
+        List<Encounter> list=  record.getEncounterHistoryList();
         for (int i = 0; i < list.size() ; i++) {
         
     
-         VitalSigns vitals= list.get(i);
+         VitalSigns vitals= list.get(i).getVitalSigns();
     
             System.out.println("");
             System.out.println("Patient's name is :" + vitals.getInformationOfPatient().getName());
@@ -36,17 +37,18 @@ public class Main {
         }
     }
     
-    public static void displayLastRecordedVitalSign(VitalSignsHistory record) {
+    public static void displayLastRecordedVitalSign(EncounterHistory record) {
 
-        VitalSigns latest = record.getVitalSignsList().get(record.getVitalSignsList().size() - 1);
-        
-        System.out.println("Patient's name is :" + latest.getInformationOfPatient().getName());
-        System.out.println("Patient's age is :" + latest.getInformationOfPatient().getAge());
-        System.out.println("Patien's respiratory rate is :" + latest.getRespiratoryRate());
-        System.out.println("Patient's heart rate is :" + latest.getHeartRate());
-        System.out.println("Patient's blood pressure is :" + latest.getBloodPressure());
-        System.out.println("Patient's weight in Kilos is :" + latest.getWeightInKilos());
-        System.out.println("Patient's wight in Pounds is :" + latest.getWeightInPounds());
+        Encounter latest = record.getEncounterHistoryList().get(record.getEncounterHistoryList().size() - 1);
+        VitalSigns vitals = latest.getVitalSigns();
+                
+        System.out.println("Patient's name is :" + vitals.getInformationOfPatient().getName());
+        System.out.println("Patient's age is :" + vitals.getInformationOfPatient().getAge());
+        System.out.println("Patien's respiratory rate is :" + vitals.getRespiratoryRate());
+        System.out.println("Patient's heart rate is :" + vitals.getHeartRate());
+        System.out.println("Patient's blood pressure is :" + vitals.getBloodPressure());
+        System.out.println("Patient's weight in Kilos is :" + vitals.getWeightInKilos());
+        System.out.println("Patient's wight in Pounds is :" + vitals.getWeightInPounds());
 
     }
     
@@ -73,13 +75,22 @@ public class Main {
       
       public static void main (String[] args)  {
           
-          VitalSignsHistory histObject= new VitalSignsHistory();
+          //VitalSignsHistory histObject= new VitalSignsHistory();
+          EncounterHistory encounterHist= new EncounterHistory();
+          
+          PatientDirectory patientDir= new PatientDirectory();
+          
+          PersonDirectory personDir= new PersonDirectory();
+          
+          
           
            Scanner sc = new Scanner(System.in);
         while(true) {
-            System.out.println("Choose an option : \n 1> Patient's Information "
+            System.out.println("Choose an option : "
+                    + "\n 1> New Patient's Visit "
                     + "\n 2> View patient vital sign record "
-                    + "\n 3> Check vital signs ");
+                    + "\n 3> Check vital signs "
+                    + "\n 4> Find BP cases in Community");
             String recordOption = (sc.nextLine());
           
             
@@ -88,11 +99,24 @@ public class Main {
                     String name = sc.nextLine();
                     System.out.print("Enter patient's age in years: ");
                     double age = Double.parseDouble(sc.nextLine());
-                    Patient patientInformation = new Patient(age, name);
+                    System.out.print("Enter patient's house: ");
+                    String house = sc.nextLine();
+                    System.out.print("Enter patient's community: ");
+                    String community = sc.nextLine();
+                    System.out.print("Enter patient's city: ");
+                    String city = sc.nextLine();
+                    Patient patientInformation = new Patient(name,age, house, community, city);
+                    patientDir.add(patientInformation);
+                    personDir.add(patientInformation);
 
                     VitalSigns vitalSigns = newVitalSign(patientInformation);
                     
-                    histObject.addVital(vitalSigns);
+                    Encounter encounter= new Encounter(vitalSigns);
+                    
+                    patientInformation.setVitalSigns(vitalSigns);
+                    
+                    encounterHist.getEncounterHistoryList().add(encounter);
+                    //histObject.addVital(vitalSigns);
                     System.out.println("New entry has been created");
                     
          } else if (recordOption.equals ("2") ) {
@@ -103,47 +127,88 @@ public class Main {
                     
                       if (recordOption.equals("1") ){
                             System.out.println("Viewing latest entry: ");
-                            displayLastRecordedVitalSign(histObject);
+                            displayLastRecordedVitalSign(encounterHist);
                             
                      } else if (recordOption.equals("2")){
                             System.out.println("Viewing historical data: ");
-                            viewSignHistory(histObject);
+                            viewSignHistory(encounterHist);
                         }
                      else {
                             System.out.println("Re enter your choice: ");
                     }
         } else if (recordOption.equals("3") ) {
             
-                    ArrayList<VitalSigns> list= histObject.getVitalSignsList();
+                    List<Encounter> list= encounterHist.getEncounterHistoryList();
                     if(list.size()==0)
                         System.out.println("No Patient records found");
             
                     else{
                         
                         System.out.println("Enter which vital signs to verify records for: "
-                                + "\n 1> Respiratory rate \n 2> Heart Rate "
+                                + "\n 1> Respiratory Rate \n 2> Heart Rate "
                                 + "\n 3> Blood Pressure \n 4> Weight in kilos "
                                 + "\n 5> Weight in pounds ");
                         recordOption = (sc.nextLine());
                         
-                        
-                        System.out.println("Records: ");
-                        for (int i=0; i< list.size(); i++) {
-                            VitalSigns cur = list.get(i);
-                            boolean isNormal = cur.isThisVitalSignNormal(recordOption);
-                            System.out.println("");
-                            System.out.println("Patient: "+ cur.getInformationOfPatient().getName());
-                            System.out.println("Vital Signs Recorded on: "+ cur.getDate());
-                            System.out.println("Status: "+(isNormal?"Normal":"Not Normal"));
-                            System.out.println("");
-                        }                                           
+                        String[] options = new String[]{"Respiratory rate","Heart Rate",
+                        "Blood Pressure","Weight in kilos","Weight in pounds"};
+                                
+                                
+                        if(Integer.parseInt(recordOption)>options.length)
+                        {
+                            System.out.println("Invalid option");
+                        }
+                        else
+                        {
+                            System.out.println("Records: ");
+                            for (int i=0; i< list.size(); i++) {
+                                VitalSigns cur = list.get(i).getVitalSigns();
+                                boolean isNormal = cur.isThisVitalSignNormal(options[Integer.parseInt(recordOption)]);
+                                System.out.println("");
+                                System.out.println("Patient: "+ cur.getInformationOfPatient().getName());
+                                System.out.println("Vital Signs Recorded on: "+ cur.getDate());
+                                System.out.println("Status: "+(isNormal?"Normal":"Not Normal"));
+                                System.out.println("");
+                            }                
+                        }
                     
                     }
                    
-                }
+                }else if (recordOption.equals ("4") ) {
+                    System.out.println("Enter Community Name: ");
+                    recordOption = (sc.nextLine());
+                    
+                    displayAbnormalBPForCommunity(recordOption, patientDir.getList());
+                    
+                } 
             
             
            }
+      }
+      
+      
+      public static void displayAbnormalBPForCommunity(String community, List<Patient> patientDir){
+          int count=0;
+          
+          if(patientDir.size()==0)
+              return;
+          
+          for(Patient P: patientDir)
+          {
+              if(P.getCommunity().equals(community))
+              {
+                    VitalSigns sign = P.getVitalSigns();
+                    boolean isNormal = sign.isThisVitalSignNormal("Blood Pressure");
+                    
+                    if(!isNormal)
+                        count++;
+                    
+              }
+          }
+          System.out.println("Community: "+community+ "\nAbnormal Cases: "+count);
+              
+          
+          
       }
       
 }

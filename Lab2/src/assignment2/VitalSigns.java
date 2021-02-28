@@ -15,7 +15,7 @@ import java.util.Date;
 public class VitalSigns {
     
     
-     private int respiratoryRate;
+    private int respiratoryRate;
     private int heartRate;
     private int bloodPressure;
     private double weightInKilos;
@@ -91,7 +91,7 @@ public class VitalSigns {
 
 
 
-public boolean isThisVitalSignNormal ( String vitalsigns) {
+public boolean isThisVitalSignNormal (String vitalsigns) {
     
     String definedAge= informationOfPatient.getgroupAge(informationOfPatient.monthsToYears(informationOfPatient.getAge()));
     if (vitalsigns.equals("Respiratory rate")) {
@@ -149,6 +149,7 @@ public boolean isThisVitalSignNormal ( String vitalsigns) {
                     }
             
                    
+    }
     }else if (vitalsigns.equals("Blood Pressure")) {
 
             
@@ -204,7 +205,8 @@ public boolean isThisVitalSignNormal ( String vitalsigns) {
                     }
             }
 
-        } else if (vitalsigns.equals("Heart Rate")) {
+        }
+    else if (vitalsigns.equals("Heart Rate")) {
 
             if (definedAge=="New Born"){
                 
@@ -360,14 +362,13 @@ public boolean isThisVitalSignNormal ( String vitalsigns) {
                         return false;
                     }
             }
-   else {
+   
+    }
+     else {
             System.out.println("No such vital sign found");
             return false;
         }
-    }
         
-    
-}
 return false;
 }
 }

@@ -9,12 +9,10 @@ package assignment2;
  *
  * @author rocha
  */
-public class Patient {
+public class Patient extends Person {
     
         
         private VitalSigns vitalPatientInformation;
-        private double age;
-        private String name;
 
         public VitalSigns getVitalSigns() {
             return vitalPatientInformation;
@@ -24,28 +22,12 @@ public class Patient {
             this.vitalPatientInformation = vitalSigns;
         }
 
-        public double getAge() {
-            return age;
-        }
-
-        public void setAge(double age) {
-            this.age = age;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
+       
+        public Patient (String name, double age, String house, String community, String city){
+            super(name, age, house, community, city);
         }
         
-        public Patient (double age , String name ){
-            this.age = age;
-            this.name= name;
-        }
         
-               
         public String getgroupAge(double age) {
             String groupAge;
             if (age<1){
@@ -80,9 +62,9 @@ public class Patient {
         double weightInKilos = vitalPatientInformation.getWeightInKilos();
         double weightInPounds= vitalPatientInformation.getWeightInPounds();   
 
+ 
 
-
-        String groupAge= getgroupAge(monthsToYears(age)); 
+        String groupAge= getgroupAge(monthsToYears(getAge())); 
         if(groupAge == "New Born"){
             System.out.println("Vital sings of new born normal ");
             if ((respiratoryRate <= 50 && respiratoryRate >= 30)
